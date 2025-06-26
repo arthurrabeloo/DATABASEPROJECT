@@ -5,4 +5,5 @@ public class Aula {
     public String horario;
     public String diaSemana; // Alterado de Date para String
     public int disciplinaId;
+    public String nomeDisciplina;
 }

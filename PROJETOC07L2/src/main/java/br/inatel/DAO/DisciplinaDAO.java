@@ -56,7 +56,12 @@ public class DisciplinaDAO extends ConnectionDAO {
         List<Disciplina> disciplinas = new ArrayList<>();
         connectToDb();
         try {
-            pst = con.prepareStatement("SELECT * FROM Disciplinas");
+            String sql = """
+            SELECT d.*, c.nome AS nome_curso, p.nome AS nome_professor
+            FROM Disciplinas d
+            JOIN Cursos c ON d.Cursos_idCursos = c.idCursos
+            JOIN Professor p ON d.Professor_idProfessor = p.idProfessor""";
+            pst = con.prepareStatement(sql);
             rs = pst.executeQuery();
             while (rs.next()) {
                 Disciplina d = new Disciplina();
@@ -64,6 +69,8 @@ public class DisciplinaDAO extends ConnectionDAO {
                 d.nome = rs.getString("nome");
                 d.cursoId = rs.getInt("Cursos_idCursos");
                 d.professorId = rs.getInt("Professor_idProfessor");
+                d.nomeCurso = rs.getString("nome_curso");
+                d.professorNome = rs.getString("nome_professor");
                 disciplinas.add(d);
             }
         } catch (SQLException e) {
@@ -71,5 +78,15 @@ public class DisciplinaDAO extends ConnectionDAO {
         }
         return disciplinas;
     }
+
+    public void exibirDisciplinasDisponiveis() {
+        List<Disciplina> disciplinas = this.selectAll();
+        System.out.println("Disciplinas disponíveis:");
+        for (Disciplina d : disciplinas) {
+            System.out.println("ID: " + d.idDisciplinas + " | Nome: " + d.nome);
+        }
+    }
+
+
 }
 

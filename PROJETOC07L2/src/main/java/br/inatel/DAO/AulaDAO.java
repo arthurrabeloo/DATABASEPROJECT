@@ -55,24 +55,35 @@ public class AulaDAO extends ConnectionDAO {
     }
 
     public List<Aula> selectAll() {
-        List<Aula> aulas = new ArrayList<>();
         connectToDb();
-        try {
-            String sql = "SELECT * FROM Aulas";
-            pst = con.prepareStatement(sql);
-            rs = pst.executeQuery();
+        List<Aula> aulas = new ArrayList<>();
+        String sql = "SELECT a.idAulas, a.horario, a.diaSemana, d.nome AS nomeDisciplina " +
+                "FROM Aulas a JOIN Disciplinas d ON a.Disciplinas_idDisciplinas = d.idDisciplinas";
+
+        try (PreparedStatement pst = con.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
+
             while (rs.next()) {
                 Aula a = new Aula();
                 a.idAulas = rs.getInt("idAulas");
                 a.horario = rs.getString("horario");
-                a.diaSemana = rs.getString("diaSemana"); // Atualizado de "data" para "diaSemana"
-                a.disciplinaId = rs.getInt("Disciplinas_idDisciplinas");
+                a.diaSemana = rs.getString("diaSemana");
+                a.nomeDisciplina = rs.getString("nomeDisciplina");
                 aulas.add(a);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return aulas;
+    }
+
+    public void exibirAulasDisponiveis() {
+        List<Aula> aulas = this.selectAll();
+        System.out.println("Aulas disponiveis:");
+        for (Aula a : aulas) {
+            System.out.println("ID: " + a.idAulas + " | Disciplina: " + a.nomeDisciplina);
+        }
     }
 
 }

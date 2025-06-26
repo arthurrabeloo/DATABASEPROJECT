@@ -5,4 +5,6 @@ public class Disciplina {
     public String nome;
     public int cursoId;
     public int professorId;
+    public String professorNome;
+    public String nomeCurso;
 }

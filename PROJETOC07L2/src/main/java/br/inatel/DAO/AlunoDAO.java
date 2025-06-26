@@ -62,7 +62,8 @@ public class AlunoDAO extends ConnectionDAO {
         List<Aluno> alunos = new ArrayList<>();
         connectToDb();
         try {
-            pst = con.prepareStatement("SELECT * FROM Alunos");
+            String sql = "SELECT a.*, c.nome AS curso_nome FROM Alunos a JOIN Cursos c ON a.Cursos_idCursos = c.idCursos";
+            pst = con.prepareStatement(sql);
             rs = pst.executeQuery();
             while (rs.next()) {
                 Aluno a = new Aluno();
@@ -73,6 +74,7 @@ public class AlunoDAO extends ConnectionDAO {
                 a.idade = rs.getInt("idade");
                 a.data_nasc = rs.getDate("data_nasc");
                 a.cursoId = rs.getInt("Cursos_idCursos");
+                a.cursoNome = rs.getString("curso_nome");
                 alunos.add(a);
             }
         } catch (SQLException e) {
@@ -107,6 +109,14 @@ public class AlunoDAO extends ConnectionDAO {
         System.out.println("Cursos disponíveis:");
         for (Curso c : cursos) {
             System.out.println("ID: " + c.idCursos + " | Nome: " + c.nome);
+        }
+    }
+
+    public void exibirAlunosDisponiveis() {
+        List<Aluno> alunos = this.selectAll();
+        System.out.println("Alunos disponíveis:");
+        for (Aluno a : alunos) {
+            System.out.println("ID: " + a.idAlunos + " | Nome: " + a.nome);
         }
     }
 }

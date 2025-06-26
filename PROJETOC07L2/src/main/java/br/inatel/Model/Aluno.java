@@ -10,4 +10,5 @@ public class Aluno {
     public Date data_nasc;
     public String telefone;
     public int cursoId;
+    public String cursoNome;
 }
