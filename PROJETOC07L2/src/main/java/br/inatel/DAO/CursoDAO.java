@@ -1,27 +1,51 @@
 package br.inatel.DAO;
-
-import br.inatel.Model.Curso;
+import br.inatel.Model.*;
 import java.sql.*;
-import java.util.ArrayList;
 
 public class CursoDAO extends ConnectionDAO {
-    public ArrayList<Curso> selectAll() {
-        ArrayList<Curso> list = new ArrayList<>();
+
+    public boolean insert(Curso curso) {
         connectToDb();
         try {
-            String sql = "SELECT * FROM Cursos";
+            String sql = "INSERT INTO Cursos (nome, descricao) VALUES (?, ?)";
             pst = con.prepareStatement(sql);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                Curso c = new Curso();
-                c.idCursos = rs.getInt("idCursos");
-                c.nome = rs.getString("nome");
-                c.descricao = rs.getString("descricao");
-                list.add(c);
-            }
+            pst.setString(1, curso.nome);
+            pst.setString(2, curso.descricao);
+            pst.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return list;
+    }
+
+    public boolean update(Curso curso) {
+        connectToDb();
+        try {
+            String sql = "UPDATE Cursos SET nome=?, descricao=? WHERE idCursos=?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, curso.nome);
+            pst.setString(2, curso.descricao);
+            pst.setInt(3, curso.idCursos);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean delete(int idCurso) {
+        connectToDb();
+        try {
+            String sql = "DELETE FROM Cursos WHERE idCursos=?";
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, idCurso);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

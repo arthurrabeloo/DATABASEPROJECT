@@ -1,26 +1,37 @@
 package br.inatel.DAO;
-
-import br.inatel.Model.AlunoProfessor;
+import br.inatel.Model.*;
 import java.sql.*;
-import java.util.ArrayList;
 
 public class AlunoProfessorDAO extends ConnectionDAO {
-    public ArrayList<AlunoProfessor> selectAll() {
-        ArrayList<AlunoProfessor> list = new ArrayList<>();
+
+    public boolean insert(AlunoProfessor ap) {
         connectToDb();
         try {
-            String sql = "SELECT * FROM Alunos_has_Professor";
+            String sql = "INSERT INTO Alunos_has_Professor (Alunos_idAlunos, Professor_idProfessor) VALUES (?, ?)";
             pst = con.prepareStatement(sql);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                AlunoProfessor ap = new AlunoProfessor();
-                ap.alunoId = rs.getInt("Alunos_idAlunos");
-                ap.professorId = rs.getInt("Professor_idProfessor");
-                list.add(ap);
-            }
+            pst.setInt(1, ap.alunoId);
+            pst.setInt(2, ap.professorId);
+            pst.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return list;
     }
+
+    public boolean delete(int alunoId, int professorId) {
+        connectToDb();
+        try {
+            String sql = "DELETE FROM Alunos_has_Professor WHERE Alunos_idAlunos=? AND Professor_idProfessor=?";
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, alunoId);
+            pst.setInt(2, professorId);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

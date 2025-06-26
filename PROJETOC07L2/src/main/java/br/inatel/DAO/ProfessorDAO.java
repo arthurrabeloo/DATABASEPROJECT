@@ -1,29 +1,55 @@
 package br.inatel.DAO;
-
-import br.inatel.Model.Professor;
+import br.inatel.Model.*;
 import java.sql.*;
-import java.util.ArrayList;
 
 public class ProfessorDAO extends ConnectionDAO {
-    public ArrayList<Professor> selectAll() {
-        ArrayList<Professor> list = new ArrayList<>();
+
+    public boolean insert(Professor professor) {
         connectToDb();
         try {
-            String sql = "SELECT * FROM Professor";
+            String sql = "INSERT INTO Professor (nome, email, data_nasc, telefone) VALUES (?, ?, ?, ?)";
             pst = con.prepareStatement(sql);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                Professor p = new Professor();
-                p.idProfessor = rs.getInt("idProfessor");
-                p.nome = rs.getString("nome");
-                p.email = rs.getString("email");
-                p.data_nasc = rs.getString("data_nasc");
-                p.telefone = rs.getString("telefone");
-                list.add(p);
-            }
+            pst.setString(1, professor.nome);
+            pst.setString(2, professor.email);
+            pst.setString(3, professor.data_nasc);
+            pst.setString(4, professor.telefone);
+            pst.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return list;
+    }
+
+    public boolean update(Professor professor) {
+        connectToDb();
+        try {
+            String sql = "UPDATE Professor SET nome=?, email=?, data_nasc=?, telefone=? WHERE idProfessor=?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, professor.nome);
+            pst.setString(2, professor.email);
+            pst.setString(3, professor.data_nasc);
+            pst.setString(4, professor.telefone);
+            pst.setInt(5, professor.idProfessor);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean delete(int idProfessor) {
+        connectToDb();
+        try {
+            String sql = "DELETE FROM Professor WHERE idProfessor=?";
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, idProfessor);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
