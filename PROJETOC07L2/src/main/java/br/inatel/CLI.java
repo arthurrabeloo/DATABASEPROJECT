@@ -6,7 +6,7 @@ import br.inatel.Model.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
-public class Main {
+public class CLI {
     static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -107,80 +107,167 @@ public class Main {
         }
     }
 
+    static boolean confirmar(String pergunta) {
+        System.out.print(pergunta + " (s/n): ");
+        return sc.nextLine().trim().equalsIgnoreCase("s");
+    }
+
     static void menuUpdate() {
         System.out.print("\nTabela para atualizar (curso, aluno, professor, aula, disciplina): ");
         String tabela = sc.nextLine().toLowerCase();
+
         switch (tabela) {
             case "curso" -> {
-                CursoDAO cursoDAO = new CursoDAO();
-                cursoDAO.exibirCursosDisponiveis();
+                CursoDAO dao = new CursoDAO();
+                dao.exibirCursosDisponiveis();
 
-                Curso c = new Curso();
-                System.out.print("ID do curso a ser atualizado: "); c.idCursos = sc.nextInt(); sc.nextLine();
-                System.out.print("Novo nome: "); c.nome = sc.nextLine();
-                System.out.print("Nova descrição: "); c.descricao = sc.nextLine();
-                cursoDAO.update(c);
+                System.out.print("ID do curso a ser atualizado: ");
+                int id = sc.nextInt(); sc.nextLine();
+                Curso c = dao.selectAll().stream().filter(cur -> cur.idCursos == id).findFirst().orElse(null);
+                if (c == null) return;
+
+                System.out.print("Atualizar nome? (s/n): ");
+                if (sc.nextLine().equalsIgnoreCase("s")) {
+                    System.out.print("Novo nome: ");
+                    c.nome = sc.nextLine();
+                }
+
+                System.out.print("Atualizar descrição? (s/n): ");
+                if (sc.nextLine().equalsIgnoreCase("s")) {
+                    System.out.print("Nova descrição: ");
+                    c.descricao = sc.nextLine();
+                }
+
+                dao.update(c);
             }
 
             case "aluno" -> {
                 AlunoDAO dao = new AlunoDAO();
                 dao.exibirAlunosDisponiveis();
-                Aluno a = new Aluno();
-                System.out.print("ID do aluno: "); a.idAlunos = sc.nextInt(); sc.nextLine();
-                System.out.print("Novo nome: "); a.nome = sc.nextLine();
-                System.out.print("Novo email: "); a.email = sc.nextLine();
-                System.out.print("Novo telefone: "); a.telefone = sc.nextLine();
-                System.out.print("Nova idade: "); a.idade = sc.nextInt(); sc.nextLine();
-                System.out.print("Nova data nascimento (yyyy-MM-dd): ");
-                try { a.data_nasc = new SimpleDateFormat("yyyy-MM-dd").parse(sc.nextLine()); } catch (Exception e) { e.printStackTrace(); return; }
-                dao.exibirCursosDisponiveis();
-                System.out.print("ID novo curso: "); a.cursoId = sc.nextInt();
+
+                System.out.print("ID do aluno: ");
+                int id = sc.nextInt(); sc.nextLine();
+                Aluno a = dao.selectAll().stream().filter(al -> al.idAlunos == id).findFirst().orElse(null);
+                if (a == null) return;
+
+                if (confirmar("Atualizar nome?")) {
+                    System.out.print("Novo nome: ");
+                    a.nome = sc.nextLine();
+                }
+                if (confirmar("Atualizar email?")) {
+                    System.out.print("Novo email: ");
+                    a.email = sc.nextLine();
+                }
+                if (confirmar("Atualizar telefone?")) {
+                    System.out.print("Novo telefone: ");
+                    a.telefone = sc.nextLine();
+                }
+                if (confirmar("Atualizar idade?")) {
+                    System.out.print("Nova idade: ");
+                    a.idade = sc.nextInt(); sc.nextLine();
+                }
+                if (confirmar("Atualizar data nascimento?")) {
+                    System.out.print("Nova data (yyyy-MM-dd): ");
+                    try {
+                        a.data_nasc = new SimpleDateFormat("yyyy-MM-dd").parse(sc.nextLine());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+                if (confirmar("Atualizar curso?")) {
+                    dao.exibirCursosDisponiveis();
+                    System.out.print("ID novo curso: ");
+                    a.cursoId = sc.nextInt();
+                }
+
                 dao.update(a);
             }
+
             case "professor" -> {
-                ProfessorDAO professorDAO = new ProfessorDAO();
-                professorDAO.exibirProfessoresDisponiveis();
+                ProfessorDAO dao = new ProfessorDAO();
+                dao.exibirProfessoresDisponiveis();
 
-                Professor p = new Professor();
-                System.out.print("ID do professor a ser atualizado: "); p.idProfessor = sc.nextInt(); sc.nextLine();
-                System.out.print("Novo nome: "); p.nome = sc.nextLine();
-                System.out.print("Novo email: "); p.email = sc.nextLine();
-                System.out.print("Nova data nascimento (yyyy-MM-dd): "); p.data_nasc = sc.nextLine();
-                System.out.print("Novo telefone: "); p.telefone = sc.nextLine();
-                professorDAO.update(p);
-            }
+                System.out.print("ID do professor: ");
+                int id = sc.nextInt(); sc.nextLine();
+                Professor p = dao.selectAll().stream().filter(pr -> pr.idProfessor == id).findFirst().orElse(null);
+                if (p == null) return;
 
-            case "aula" -> {
-                AulaDAO aulaDAO = new AulaDAO();
-                DisciplinaDAO disciplinaDAO = new DisciplinaDAO();
-                aulaDAO.selectAll().forEach(a -> {System.out.println("ID: " + a.idAulas + " | Horário: " + a.horario + " | Dia: " + a.diaSemana + " | Disciplina: " + a.nomeDisciplina);});
+                if (confirmar("Atualizar nome?")) {
+                    System.out.print("Novo nome: ");
+                    p.nome = sc.nextLine();
+                }
+                if (confirmar("Atualizar email?")) {
+                    System.out.print("Novo email: ");
+                    p.email = sc.nextLine();
+                }
+                if (confirmar("Atualizar data nascimento?")) {
+                    System.out.print("Nova data nascimento (yyyy-MM-dd): ");
+                    p.data_nasc = sc.nextLine();
+                }
+                if (confirmar("Atualizar telefone?")) {
+                    System.out.print("Novo telefone: ");
+                    p.telefone = sc.nextLine();
+                }
 
-                Aula a = new Aula();
-                System.out.print("ID da aula a ser atualizada: "); a.idAulas = sc.nextInt(); sc.nextLine();
-                System.out.print("Novo horário: "); a.horario = sc.nextLine();
-                System.out.print("Novo dia da semana: "); a.diaSemana = sc.nextLine();
-                disciplinaDAO.exibirDisciplinasDisponiveis();
-                System.out.print("Nova ID da disciplina: "); a.disciplinaId = sc.nextInt();
-                aulaDAO.update(a);
+                dao.update(p);
             }
 
             case "disciplina" -> {
-                DisciplinaDAO disciplinaDAO = new DisciplinaDAO();
-                CursoDAO cursoDAO = new CursoDAO();
-                ProfessorDAO professorDAO = new ProfessorDAO();
-                disciplinaDAO.exibirDisciplinasDisponiveis();
+                DisciplinaDAO dao = new DisciplinaDAO();
+                dao.exibirDisciplinasDisponiveis();
 
-                Disciplina d = new Disciplina();
-                System.out.print("ID da disciplina a ser atualizada: "); d.idDisciplinas = sc.nextInt(); sc.nextLine();
-                System.out.print("Novo nome: "); d.nome = sc.nextLine();
+                System.out.print("ID da disciplina: ");
+                int id = sc.nextInt(); sc.nextLine();
+                Disciplina d = dao.selectAll().stream().filter(di -> di.idDisciplinas == id).findFirst().orElse(null);
+                if (d == null) return;
 
-                cursoDAO.exibirCursosDisponiveis();
-                System.out.print("Nova ID do curso: "); d.cursoId = sc.nextInt();
-                professorDAO.exibirProfessoresDisponiveis();
-                System.out.print("Nova ID do professor: "); d.professorId = sc.nextInt();
-                disciplinaDAO.update(d);
+                if (confirmar("Atualizar nome?")) {
+                    System.out.print("Novo nome: ");
+                    d.nome = sc.nextLine();
+                }
+                if (confirmar("Atualizar curso?")) {
+                    CursoDAO cdao = new CursoDAO();
+                    cdao.exibirCursosDisponiveis();
+                    System.out.print("Nova ID do curso: ");
+                    d.cursoId = sc.nextInt(); sc.nextLine();
+                }
+                if (confirmar("Atualizar professor?")) {
+                    ProfessorDAO pdao = new ProfessorDAO();
+                    pdao.exibirProfessoresDisponiveis();
+                    System.out.print("Nova ID do professor: ");
+                    d.professorId = sc.nextInt();
+                }
+
+                dao.update(d);
             }
 
+            case "aula" -> {
+                AulaDAO dao = new AulaDAO();
+                dao.selectAll().forEach(a -> System.out.println("ID: " + a.idAulas + " | Horário: " + a.horario + " | Dia: " + a.diaSemana + " | Disciplina: " + a.nomeDisciplina));
+
+                System.out.print("ID da aula: ");
+                int id = sc.nextInt(); sc.nextLine();
+                Aula a = dao.selectAll().stream().filter(au -> au.idAulas == id).findFirst().orElse(null);
+                if (a == null) return;
+
+                if (confirmar("Atualizar horário?")) {
+                    System.out.print("Novo horário: ");
+                    a.horario = sc.nextLine();
+                }
+                if (confirmar("Atualizar dia da semana?")) {
+                    System.out.print("Novo dia da semana: ");
+                    a.diaSemana = sc.nextLine();
+                }
+                if (confirmar("Atualizar disciplina?")) {
+                    DisciplinaDAO ddao = new DisciplinaDAO();
+                    ddao.exibirDisciplinasDisponiveis();
+                    System.out.print("Nova ID da disciplina: ");
+                    a.disciplinaId = sc.nextInt();
+                }
+
+                dao.update(a);
+            }
 
             default -> System.out.println("Tabela inválida.");
         }
