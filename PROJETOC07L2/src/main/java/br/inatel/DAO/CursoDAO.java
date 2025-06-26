@@ -1,6 +1,7 @@
 package br.inatel.DAO;
 import br.inatel.Model.*;
 import java.sql.*;
+import java.util.*;
 
 public class CursoDAO extends ConnectionDAO {
 
@@ -48,4 +49,32 @@ public class CursoDAO extends ConnectionDAO {
             return false;
         }
     }
+
+    public List<Curso> selectAll() {
+        List<Curso> cursos = new ArrayList<>();
+        connectToDb();
+        try {
+            pst = con.prepareStatement("SELECT * FROM Cursos");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                Curso c = new Curso();
+                c.idCursos = rs.getInt("idCursos");
+                c.nome = rs.getString("nome");
+                c.descricao = rs.getString("descricao");
+                cursos.add(c);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cursos;
+    }
+
+    public void exibirCursosDisponiveis() {
+        List<Curso> cursos = this.selectAll();
+        System.out.println("Cursos disponíveis:");
+        for (Curso c : cursos) {
+            System.out.println("ID: " + c.idCursos + " | Nome: " + c.nome);
+        }
+    }
+
 }

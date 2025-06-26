@@ -1,6 +1,7 @@
 package br.inatel.DAO;
 import br.inatel.Model.*;
 import java.sql.*;
+import java.util.*;
 
 public class DisciplinaDAO extends ConnectionDAO {
 
@@ -50,4 +51,25 @@ public class DisciplinaDAO extends ConnectionDAO {
             return false;
         }
     }
+
+    public List<Disciplina> selectAll() {
+        List<Disciplina> disciplinas = new ArrayList<>();
+        connectToDb();
+        try {
+            pst = con.prepareStatement("SELECT * FROM Disciplinas");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                Disciplina d = new Disciplina();
+                d.idDisciplinas = rs.getInt("idDisciplinas");
+                d.nome = rs.getString("nome");
+                d.cursoId = rs.getInt("Cursos_idCursos");
+                d.professorId = rs.getInt("Professor_idProfessor");
+                disciplinas.add(d);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return disciplinas;
+    }
 }
+

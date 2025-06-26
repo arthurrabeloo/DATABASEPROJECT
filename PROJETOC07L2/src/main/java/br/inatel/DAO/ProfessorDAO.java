@@ -1,6 +1,7 @@
 package br.inatel.DAO;
 import br.inatel.Model.*;
 import java.sql.*;
+import java.util.*;
 
 public class ProfessorDAO extends ConnectionDAO {
 
@@ -52,4 +53,36 @@ public class ProfessorDAO extends ConnectionDAO {
             return false;
         }
     }
+
+    public List<Professor> selectAll() {
+        List<Professor> professores = new ArrayList<>();
+        connectToDb();
+        try {
+            pst = con.prepareStatement("SELECT * FROM Professor");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                Professor p = new Professor();
+                p.idProfessor = rs.getInt("idProfessor");
+                p.nome = rs.getString("nome");
+                p.email = rs.getString("email");
+                p.data_nasc = rs.getString("data_nasc");
+                p.telefone = rs.getString("telefone");
+                professores.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return professores;
+    }
+
+    public void exibirProfessoresDisponiveis() {
+        List<Professor> professores = this.selectAll();
+        System.out.println("Professores disponíveis:");
+        for (Professor p : professores) {
+            System.out.println("ID: " + p.idProfessor + " | Nome: " + p.nome);
+        }
+    }
+
+
+
 }

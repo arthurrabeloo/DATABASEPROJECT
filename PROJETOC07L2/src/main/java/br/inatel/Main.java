@@ -48,12 +48,19 @@ public class Main {
             case "aluno" -> {
                 AlunoDAO dao = new AlunoDAO();
                 Aluno a = new Aluno();
+
                 System.out.print("Nome: "); a.nome = sc.nextLine();
                 System.out.print("Email: "); a.email = sc.nextLine();
                 System.out.print("Telefone: "); a.telefone = sc.nextLine();
                 System.out.print("Idade: "); a.idade = sc.nextInt(); sc.nextLine();
                 System.out.print("Data de nascimento (yyyy-MM-dd): ");
-                try { a.data_nasc = new SimpleDateFormat("yyyy-MM-dd").parse(sc.nextLine()); } catch (Exception e) { e.printStackTrace(); return; }
+                try {
+                    a.data_nasc = new SimpleDateFormat("yyyy-MM-dd").parse(sc.nextLine());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                dao.exibirCursosDisponiveis();
                 System.out.print("ID do curso: "); a.cursoId = sc.nextInt();
                 dao.insert(a);
             }
@@ -62,27 +69,38 @@ public class Main {
                 Professor p = new Professor();
                 System.out.print("Nome: "); p.nome = sc.nextLine();
                 System.out.print("Email: "); p.email = sc.nextLine();
-                System.out.print("Data nascimento: "); p.data_nasc = sc.nextLine();
+                System.out.print("Data nascimento (yyyy-MM-dd): "); p.data_nasc = sc.nextLine();
                 System.out.print("Telefone: "); p.telefone = sc.nextLine();
                 dao.insert(p);
             }
             case "disciplina" -> {
                 DisciplinaDAO dao = new DisciplinaDAO();
                 Disciplina d = new Disciplina();
-                System.out.print("Nome: "); d.nome = sc.nextLine();
+
+                System.out.print("Nome da disciplina: "); d.nome = sc.nextLine();
+
+                CursoDAO cursoDAO = new CursoDAO();
+                cursoDAO.exibirCursosDisponiveis();
                 System.out.print("ID do curso: "); d.cursoId = sc.nextInt();
+
+                ProfessorDAO professorDAO = new ProfessorDAO();
+                professorDAO.exibirProfessoresDisponiveis();
                 System.out.print("ID do professor: "); d.professorId = sc.nextInt();
                 dao.insert(d);
             }
+
             case "aula" -> {
                 AulaDAO dao = new AulaDAO();
                 Aula a = new Aula();
                 System.out.print("Horário: "); a.horario = sc.nextLine();
-                System.out.print("Data (yyyy-MM-dd): ");
-                try { a.data = new SimpleDateFormat("yyyy-MM-dd").parse(sc.nextLine()); } catch (Exception e) { e.printStackTrace(); return; }
+
+                System.out.println("Informe o dia da semana (ex: Segunda-feira, Terça-feira, etc.):");
+                a.diaSemana = sc.nextLine();
+
                 System.out.print("ID da disciplina: "); a.disciplinaId = sc.nextInt();
                 dao.insert(a);
             }
+
             default -> System.out.println("Tabela inválida.");
         }
     }
@@ -118,10 +136,21 @@ public class Main {
                 System.out.print("ID do professor: "); p.idProfessor = sc.nextInt(); sc.nextLine();
                 System.out.print("Novo nome: "); p.nome = sc.nextLine();
                 System.out.print("Novo email: "); p.email = sc.nextLine();
-                System.out.print("Nova data nascimento: "); p.data_nasc = sc.nextLine();
+                System.out.print("Nova data nascimento (yyyy-MM-dd): "); p.data_nasc = sc.nextLine();
                 System.out.print("Novo telefone: "); p.telefone = sc.nextLine();
                 dao.update(p);
             }
+            case "aula" -> {
+                AulaDAO dao = new AulaDAO();
+                Aula a = new Aula();
+                System.out.print("ID da aula a ser atualizada: "); a.idAulas = sc.nextInt(); sc.nextLine();
+                System.out.print("Novo horário: "); a.horario = sc.nextLine();
+                System.out.println("Novo dia da semana (ex: Segunda-feira, Terça-feira, etc.):");
+                a.diaSemana = sc.nextLine();
+                System.out.print("Nova ID da disciplina: "); a.disciplinaId = sc.nextInt();
+                dao.update(a);
+            }
+
             default -> System.out.println("Tabela inválida.");
         }
     }
@@ -194,6 +223,17 @@ public class Main {
                     dao.selectAll().stream().filter(p -> p.idProfessor == id).forEach(p -> System.out.println(p.nome));
                 }
             }
+            case "aula" -> {
+                AulaDAO dao = new AulaDAO();
+                dao.selectAll().forEach(a -> {
+                    System.out.println("ID: " + a.idAulas);
+                    System.out.println("Horário: " + a.horario);
+                    System.out.println("Dia da Semana: " + a.diaSemana); // Atualizado para "diaSemana"
+                    System.out.println("ID da Disciplina: " + a.disciplinaId);
+                    System.out.println("-------------------------");
+                });
+            }
+
             default -> System.out.println("Tabela inválida.");
         }
     }

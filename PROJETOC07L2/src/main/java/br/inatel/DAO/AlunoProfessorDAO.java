@@ -1,6 +1,7 @@
 package br.inatel.DAO;
 import br.inatel.Model.*;
 import java.sql.*;
+import java.util.*;
 
 public class AlunoProfessorDAO extends ConnectionDAO {
 
@@ -34,4 +35,21 @@ public class AlunoProfessorDAO extends ConnectionDAO {
         }
     }
 
+    public List<AlunoProfessor> selectAll() {
+        List<AlunoProfessor> lista = new ArrayList<>();
+        connectToDb();
+        try {
+            pst = con.prepareStatement("SELECT * FROM Alunos_has_Professor");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                AlunoProfessor ap = new AlunoProfessor();
+                ap.alunoId = rs.getInt("Alunos_idAlunos");
+                ap.professorId = rs.getInt("Professor_idProfessor");
+                lista.add(ap);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }

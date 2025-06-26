@@ -1,6 +1,7 @@
 package br.inatel.DAO;
 import br.inatel.Model.*;
 import java.sql.SQLException;
+import java.util.*;
 
 public class AlunoDAO extends ConnectionDAO {
 
@@ -56,4 +57,57 @@ public class AlunoDAO extends ConnectionDAO {
             return false;
         }
     }
+
+    public List<Aluno> selectAll() {
+        List<Aluno> alunos = new ArrayList<>();
+        connectToDb();
+        try {
+            pst = con.prepareStatement("SELECT * FROM Alunos");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                Aluno a = new Aluno();
+                a.idAlunos = rs.getInt("idAlunos");
+                a.nome = rs.getString("nome");
+                a.email = rs.getString("email");
+                a.telefone = rs.getString("telefone");
+                a.idade = rs.getInt("idade");
+                a.data_nasc = rs.getDate("data_nasc");
+                a.cursoId = rs.getInt("Cursos_idCursos");
+                alunos.add(a);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return alunos;
+    }
+
+    public List<Aluno> listarAlunosPorCurso(int cursoId) {
+        List<Aluno> alunos = new ArrayList<>();
+        connectToDb();
+        try {
+            String sql = "CALL ListarAlunosPorCurso(?)";
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, cursoId);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                Aluno a = new Aluno();
+                a.nome = rs.getString("Nome_Aluno");
+                a.email = rs.getString("Email_Aluno");
+                alunos.add(a);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return alunos;
+    }
+
+    public void exibirCursosDisponiveis() {
+        CursoDAO cursoDAO = new CursoDAO();
+        List<Curso> cursos = cursoDAO.selectAll();
+        System.out.println("Cursos disponíveis:");
+        for (Curso c : cursos) {
+            System.out.println("ID: " + c.idCursos + " | Nome: " + c.nome);
+        }
+    }
 }
+
